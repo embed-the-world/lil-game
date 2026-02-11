@@ -6,6 +6,7 @@
 #include <SFML/System/Vector2.hpp>
 
 #include "sfml_actions.h"
+#include "mainmenu_main.h"
 
 /** Main window. */
 sf::RenderWindow* main_window;
@@ -46,12 +47,19 @@ bool sfml_actions_is_window_open()
 int sfml_actions_draw_screen()
 {
 	main_window->clear();
-	main_window->draw( *my_circle );
 	main_window->draw( *my_text );
 	/* draw circle vector */
 	for (auto new_circle : my_vector) {
 		main_window->draw(*new_circle);
 	}
+
+	/* draw menu */
+	mainmenu_draw_menu();
+
+	/* draw mouse pointer*/
+	main_window->draw( *my_circle );
+
+	/* show everything */
 	main_window->display();
 	return 0;
 }
@@ -61,7 +69,7 @@ int sfml_actions_check_events() {
 	{
 		if ( event->is<sf::Event::Closed>() )
 		{
-			main_window->close();
+			sfml_actions_close_window();
 		}
 		if (const auto* mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>())
 		{
@@ -71,6 +79,12 @@ int sfml_actions_check_events() {
 			}
 		}
 	}
+	return 0;
+}
+
+int sfml_actions_close_window()
+{
+	main_window->close();
 	return 0;
 }
 
@@ -86,18 +100,133 @@ bool sfml_actions_has_click_event()
 	return isMouseButtonPressed;
 }
 
-int sfml_actions_drop_circle()
+int sfml_actions_process_click()
+{
+	sf::Vector2i* mouse_position_now = new sf::Vector2i(sf::Mouse::getPosition(*main_window));
+
+	sfml_actions_drop_circle(mouse_position_now->x, mouse_position_now->y);
+	mainmenu_process_click(mouse_position_now->x, mouse_position_now->y);
+
+	isMouseButtonPressed = false;
+	return 0;
+}
+
+int sfml_actions_drop_circle(int pos_x, int pos_y)
 {
 	int radius = 15;
-	isMouseButtonPressed = false;
-	sf::Vector2i* mouse_position_now = new sf::Vector2i(sf::Mouse::getPosition(*main_window));
 	sf::CircleShape* new_circle = new sf::CircleShape((float)radius);
-	new_circle->setPosition(sf::Vector2f(mouse_position_now->x-radius, mouse_position_now->y-radius));
-	new_circle->setFillColor( sf::Color::Yellow );
+	new_circle->setPosition(sf::Vector2f(pos_x-radius, pos_y-radius));
+	new_circle->setFillColor( sf::Color::Blue );
 	my_vector.push_back(new_circle);
 	if(my_vector.size()>10)
 	{
 		my_vector.erase(my_vector.begin());
 	}
 	return 0;
+}
+
+int sfml_actions_get_window(sf::RenderWindow* out_main_window)
+{
+	if(NULL == out_main_window)
+	{
+		return -1;
+	}
+	out_main_window = main_window;
+	return 0;
+}
+
+
+/** buttons. */
+sf::RectangleShape* button_top;
+sf::RectangleShape* button_mid;
+sf::RectangleShape* button_bot;
+sf::RectangleShape* button_menu_small;
+
+int sfml_menu_init_elements()
+{
+	button_top = new sf::RectangleShape({400.0f, 50.0f});
+	button_mid = new sf::RectangleShape({390.0f, 50.0f});
+	button_bot = new sf::RectangleShape({380.0f, 50.0f});
+	button_menu_small = new sf::RectangleShape({100.0f, 20.0f});
+
+	button_top->setFillColor(sf::Color::Red);
+	button_mid->setFillColor(sf::Color::Yellow);
+	button_bot->setFillColor(sf::Color::Green);
+	button_menu_small->setFillColor(sf::Color::Red);
+
+	button_top->setOutlineColor(sf::Color::Magenta);
+	button_mid->setOutlineColor(sf::Color::Magenta);
+	button_bot->setOutlineColor(sf::Color::Magenta);
+	button_menu_small->setOutlineColor(sf::Color::Red);
+
+	button_top->setOutlineThickness(5.0f);
+	button_mid->setOutlineThickness(5.0f);
+	button_bot->setOutlineThickness(5.0f);
+	button_menu_small->setOutlineThickness(5.0f);
+
+	button_top->setPosition({450.0f, 170.0f});
+	button_mid->setPosition({450.0f, 300.0f});
+	button_bot->setPosition({450.0f, 430.0f});
+	button_menu_small->setPosition({900.0f, 20.0f});
+
+	return 0;
+}
+
+int sfml_menu_draw_menu_big()
+{
+	/* Draw elements. */
+	main_window->draw(*button_top);
+	main_window->draw(*button_mid);
+	main_window->draw(*button_bot);
+	return 0;
+}
+
+int sfml_menu_draw_menu_small()
+{
+	/* Draw elements. */
+	main_window->draw(*button_menu_small);
+	return 0;
+}
+
+bool sfml_menu_is_coord_on_small_menu(int pos_x, int pos_y)
+{
+	sf::Vector2f pointToCheck(pos_x, pos_y);
+	sf::FloatRect bounds_button = button_menu_small->getGlobalBounds();
+	if(bounds_button.contains(pointToCheck))
+	{
+		return true;
+	}
+	return false;
+}
+
+bool sfml_menu_is_coord_on_button_top(int pos_x, int pos_y)
+{
+	sf::Vector2f pointToCheck(pos_x, pos_y);
+	sf::FloatRect bounds_button = button_top->getGlobalBounds();
+	if(bounds_button.contains(pointToCheck))
+	{
+		return true;
+	}
+	return false;
+}
+
+bool sfml_menu_is_coord_on_button_mid(int pos_x, int pos_y)
+{
+	sf::Vector2f pointToCheck(pos_x, pos_y);
+	sf::FloatRect bounds_button_mid = button_mid->getGlobalBounds();
+	if(bounds_button_mid.contains(pointToCheck))
+	{
+		return true;
+	}
+	return false;
+}
+bool sfml_menu_is_coord_on_button_bot(int pos_x, int pos_y)
+{
+	sf::Vector2f pointToCheck(pos_x, pos_y);
+	sf::FloatRect bounds_button = button_bot->getGlobalBounds();
+	if(bounds_button.contains(pointToCheck))
+	{
+		return true;
+	}
+	return false;
 }

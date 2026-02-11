@@ -18,9 +18,10 @@ FetchContent_MakeAvailable(SFML)
 
 # add libraries
 add_subdirectory(composer)
+add_subdirectory(menu)
 
 # add executable
 add_executable(main main.cpp)
 
 # linker
-target_link_libraries(main PRIVATE composer)
+target_link_libraries(main PRIVATE composer_lib)

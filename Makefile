@@ -6,6 +6,7 @@ all: build compile run
 
 build:
 	@echo "***** building *****"
+	mkdir -p build
 	cmake -S src -B build
 
 compile:
