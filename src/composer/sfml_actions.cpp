@@ -65,8 +65,8 @@ bool sfml_actions_is_victory()
 
 int sfml_actions_draw_level_assets()
 {
-	main_window->draw(*sprite_main_character);
 	main_window->draw(*sprite_goalpost);
+	main_window->draw(*sprite_main_character);
 	return 0;
 }
 
