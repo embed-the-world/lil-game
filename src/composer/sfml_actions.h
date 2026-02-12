@@ -70,3 +70,18 @@ bool sfml_menu_is_coord_on_button_bot(int pos_x, int pos_y);
 bool sfml_menu_is_coord_on_button_top(int pos_x, int pos_y);
 bool sfml_menu_is_coord_on_small_menu(int pos_x, int pos_y);
 
+int sfml_action_show_scene();
+
+bool sfml_actions_is_move_down_active();
+bool sfml_actions_is_move_up_active();
+bool sfml_actions_is_move_left_active();
+bool sfml_actions_is_move_right_active();
+
+int sfml_actions_draw_level_assets();
+int sfml_actions_init_level_assets();
+int sfml_actions_move_player(double mov_x, double mov_y);
+
+int sfml_actions_draw_victory_text();
+int sfml_actions_load_victory_text();
+
+bool sfml_actions_is_victory();

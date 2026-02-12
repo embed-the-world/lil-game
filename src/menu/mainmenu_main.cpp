@@ -1,9 +1,9 @@
 
 #include <iostream>
 
+#include "first_level_main.h"
 #include "mainmenu_main.h"
 #include "sfml_actions.h"
-
 
 enum mainmenu_state_machine {
 	MAINMENU_INIT = 0,
@@ -56,8 +56,6 @@ int mainmenu_draw_menu()
 
 int mainmenu_process_click(int pos_x, int pos_y)
 {
-	std::cout << "yo!\n";
-
 	switch(mainmenu_state) {
 	case MAINMENU_INIT:
 		break;
@@ -74,6 +72,7 @@ int mainmenu_process_click(int pos_x, int pos_y)
 		}
 		if(sfml_menu_is_coord_on_button_top(pos_x, pos_y))
 		{
+			first_level_start();
 			mainmenu_state = MAINMENU_SMALL;
 		}
 		break;

@@ -1,5 +1,7 @@
 
 #include <vector>
+#include <cmath>
+#include <iostream>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Export.hpp>
@@ -20,6 +22,60 @@ sf::Vector2i* mouse_position;
 /** Vector with circles. */
 std::vector<sf::CircleShape*> my_vector;
 
+/* Assets */
+sf::Texture* texture_main_character;
+sf::Texture* texture_goalpost;
+sf::Sprite* sprite_main_character;
+sf::Sprite* sprite_goalpost;
+
+int sfml_actions_init_level_assets()
+{
+	texture_main_character = new sf::Texture("assets/beautiful_art/main_character.png");
+	sprite_main_character = new sf::Sprite(*texture_main_character);
+	sprite_main_character->setPosition({10.0f, 200.0f});
+
+	texture_goalpost = new sf::Texture("assets/beautiful_art/goalpost.png");
+	sprite_goalpost = new sf::Sprite(*texture_goalpost);
+	sprite_goalpost->setPosition({900, 400});
+
+	return 0;
+}
+
+bool sfml_actions_is_victory()
+{
+	double box_distance = 0.0f;
+
+	sf::Vector2f box1 = sprite_main_character->getPosition();
+	sf::Vector2f box2 = sprite_goalpost->getPosition();
+
+	box_distance = std::sqrt(
+		(((float)box1.x - (float)box2.x) * ((float)box1.x - (float)box2.x))	+
+		(((float)box1.y - (float)box2.y) * ((float)box1.y - (float)box2.y))	);
+
+	//std::cout << box_distance << "\n";
+
+	if(box_distance < 175.0f)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
+int sfml_actions_draw_level_assets()
+{
+	main_window->draw(*sprite_main_character);
+	main_window->draw(*sprite_goalpost);
+	return 0;
+}
+
+int sfml_actions_move_player(double mov_x, double mov_y)
+{
+	sprite_main_character->move({mov_x, mov_y});
+	return 0;
+}
+
 bool isMouseButtonPressed = false;
 
 int sfml_actions_init_window()
@@ -33,9 +89,24 @@ int sfml_actions_init_window()
 
 	/* create text element */
 	my_font = new sf::Font("assets/fonts/ThaloriaRegular/Thaloria_Regular.ttf");
-	my_text = new sf::Text(*my_font, "Hello World!\n""THALORIA\n""thaloria\n""°ÄÖÜß@€", 123);
+	my_text = new sf::Text(*my_font, "Hello World!\n""THALORIA", 123);
 	my_text->setPosition(sf::Vector2f(70,10));
 
+	return 0;
+}
+
+sf::Text* text_victory;
+int sfml_actions_load_victory_text()
+{
+	text_victory = new sf::Text(*my_font, "EPIC VICTORY!", 250);
+	text_victory->setFillColor(sf::Color::Yellow);
+	text_victory->setPosition({133, 244});
+	return 0;
+}
+
+int sfml_actions_draw_victory_text()
+{
+	main_window->draw(*text_victory);
 	return 0;
 }
 
@@ -53,15 +124,49 @@ int sfml_actions_draw_screen()
 		main_window->draw(*new_circle);
 	}
 
-	/* draw menu */
-	mainmenu_draw_menu();
-
 	/* draw mouse pointer*/
 	main_window->draw( *my_circle );
 
+	return 0;
+}
+
+int sfml_action_show_scene()
+{
 	/* show everything */
 	main_window->display();
 	return 0;
+}
+
+bool is_move_right_active = false;
+bool sfml_actions_is_move_right_active()
+{
+	bool ret_val = is_move_right_active;
+	is_move_right_active = false;
+	return ret_val;
+}
+
+bool is_move_left_active = false;
+bool sfml_actions_is_move_left_active()
+{
+	bool ret_val = is_move_left_active;
+	is_move_left_active = false;
+	return ret_val;
+}
+
+bool is_move_up_active = false;
+bool sfml_actions_is_move_up_active()
+{
+	bool ret_val = is_move_up_active;
+	is_move_up_active = false;
+	return ret_val;
+}
+
+bool is_move_down_active = false;
+bool sfml_actions_is_move_down_active()
+{
+	bool ret_val = is_move_down_active;
+	is_move_down_active = false;
+	return ret_val;
 }
 
 int sfml_actions_check_events() {
@@ -78,6 +183,14 @@ int sfml_actions_check_events() {
 				isMouseButtonPressed = true;
 			}
 		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+			is_move_up_active = true;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+			is_move_left_active = true;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+			is_move_down_active = true;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+			is_move_right_active = true;
 	}
 	return 0;
 }
@@ -136,14 +249,20 @@ int sfml_actions_get_window(sf::RenderWindow* out_main_window)
 }
 
 
-/** buttons. */
+/** ------------------ menu -------------------- */
 sf::RectangleShape* button_top;
 sf::RectangleShape* button_mid;
 sf::RectangleShape* button_bot;
 sf::RectangleShape* button_menu_small;
+sf::Text* text_button_top;
+sf::Text* text_button_mid;
+sf::Text* text_button_bot;
+sf::Text* text_button_menu_small;
 
 int sfml_menu_init_elements()
 {
+	int font_size = 50;
+
 	button_top = new sf::RectangleShape({400.0f, 50.0f});
 	button_mid = new sf::RectangleShape({390.0f, 50.0f});
 	button_bot = new sf::RectangleShape({380.0f, 50.0f});
@@ -169,6 +288,22 @@ int sfml_menu_init_elements()
 	button_bot->setPosition({450.0f, 430.0f});
 	button_menu_small->setPosition({900.0f, 20.0f});
 
+	text_button_top = new sf::Text(*my_font, "Start", font_size);
+	text_button_top->setFillColor(sf::Color::Blue);
+	text_button_top->setPosition({470.0f, 160.0f});
+
+	text_button_mid = new sf::Text(*my_font, "option (WIP)", font_size);
+	text_button_mid->setFillColor(sf::Color::Blue);
+	text_button_mid->setPosition({470.0f, 290.0f});
+
+	text_button_bot = new sf::Text(*my_font, "Quit", font_size);
+	text_button_bot->setFillColor(sf::Color::Blue);
+	text_button_bot->setPosition({470.0f, 420.0f});
+
+	text_button_menu_small = new sf::Text(*my_font, "Menu", 25);
+	text_button_menu_small->setFillColor(sf::Color::Blue);
+	text_button_menu_small->setPosition({920.0f, 15.0f});
+
 	return 0;
 }
 
@@ -178,6 +313,9 @@ int sfml_menu_draw_menu_big()
 	main_window->draw(*button_top);
 	main_window->draw(*button_mid);
 	main_window->draw(*button_bot);
+	main_window->draw(*text_button_top);
+	main_window->draw(*text_button_mid);
+	main_window->draw(*text_button_bot);
 	return 0;
 }
 
@@ -185,6 +323,7 @@ int sfml_menu_draw_menu_small()
 {
 	/* Draw elements. */
 	main_window->draw(*button_menu_small);
+	main_window->draw(*text_button_menu_small);
 	return 0;
 }
 
