@@ -183,6 +183,10 @@ int sfml_actions_check_events() {
 				isMouseButtonPressed = true;
 			}
 		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
+		{
+			sfml_actions_close_window();
+		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
 			is_move_up_active = true;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
@@ -190,6 +194,14 @@ int sfml_actions_check_events() {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
 			is_move_down_active = true;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+			is_move_right_active = true;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
+			is_move_up_active = true;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
+			is_move_left_active = true;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
+			is_move_down_active = true;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
 			is_move_right_active = true;
 	}
 	return 0;

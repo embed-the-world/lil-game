@@ -20,6 +20,7 @@ add_custom_target(fetch_fonts ALL
 
 # GIT get SFML
 include(FetchContent)
+set(FETCHCONTENT_QUIET OFF)
 FetchContent_Declare(SFML
 	GIT_REPOSITORY https://github.com/SFML/SFML.git
 	GIT_TAG 3.0.2
