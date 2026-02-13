@@ -28,6 +28,8 @@ sf::Texture* texture_goalpost;
 sf::Sprite* sprite_main_character;
 sf::Sprite* sprite_goalpost;
 
+bool isMouseButtonPressed = false;
+
 int sfml_actions_init_level_assets()
 {
 	texture_main_character = new sf::Texture("assets/beautiful_art/main_character.png");
@@ -50,11 +52,11 @@ bool sfml_actions_is_victory()
 
 	box_distance = std::sqrt(
 		(((float)box1.x - (float)box2.x) * ((float)box1.x - (float)box2.x))	+
-		(((float)box1.y - (float)box2.y) * ((float)box1.y - (float)box2.y))	);
+		(((float)box1.y - (float)box2.y) * ((float)box1.y - (float)box2.y))
+	);
 
 	//std::cout << box_distance << "\n";
-
-	if(box_distance < 175.0f)
+	if(box_distance < 145.0f)
 	{
 		return true;
 	}
@@ -76,8 +78,6 @@ int sfml_actions_move_player(double mov_x, double mov_y)
 	return 0;
 }
 
-bool isMouseButtonPressed = false;
-
 int sfml_actions_init_window()
 {
 	main_window = new sf::RenderWindow( sf::VideoMode( { 1280, 720 } ), "SFML works!" );
@@ -88,8 +88,8 @@ int sfml_actions_init_window()
 	my_circle->setFillColor( sf::Color::Green );
 
 	/* create text element */
-	my_font = new sf::Font("assets/fonts/ThaloriaRegular/Thaloria_Regular.ttf");
-	my_text = new sf::Text(*my_font, "Hello World!\n""THALORIA", 123);
+	my_font = new sf::Font("src/fonts/Roboto-Regular.ttf");
+	my_text = new sf::Text(*my_font, "Hello World!\n""Font: Roboto", 80);
 	my_text->setPosition(sf::Vector2f(70,10));
 
 	return 0;
@@ -98,7 +98,7 @@ int sfml_actions_init_window()
 sf::Text* text_victory;
 int sfml_actions_load_victory_text()
 {
-	text_victory = new sf::Text(*my_font, "EPIC VICTORY!", 250);
+	text_victory = new sf::Text(*my_font, "VICTORY!", 150);
 	text_victory->setFillColor(sf::Color::Yellow);
 	text_victory->setPosition({133, 244});
 	return 0;
